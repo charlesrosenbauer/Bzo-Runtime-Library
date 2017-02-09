@@ -65,6 +65,7 @@ typedef struct{
 typedef struct{
   int top, bottom;
   BzoTask tasks [8];
+  void* sibling;
 }TaskQueue;
 
 
@@ -77,10 +78,27 @@ typedef struct{
 
 
 typedef struct{
+  TaskQueue* tQ;    //Topological Queues
+  TaskQueue  iQ;    //Internal Queue
+  TaskQueue* hQ;    //Higher-Order Queues
 
+  int tqSize;       //Number of Topological Queues
+  int hqSize;       //Number of Higher-Order Queues
+
+
+  void* runtimePtr; //Pointer to the runtime.
 }BzoTaskUnit;
 
 
+
+
+
+
+
+
+
+
+void runTaskUnit(BzoTaskUnit*);
 
 
 #endif
