@@ -62,9 +62,10 @@ typedef struct{
 
 
 
+//Task queues can hold N-1 items, where N is the number of elements in the tasks array.
 typedef struct{
   int top, bottom;
-  BzoTask tasks [8];
+  BzoTask tasks [16];
   void* sibling;
 }TaskQueue;
 
@@ -98,7 +99,11 @@ typedef struct{
 
 
 
+int popTask  (TaskQueue*, Task*);
+int pushTask (TaskQueue*, Task );
+int queueSize(TaskQueue*);
 void runTaskUnit(BzoTaskUnit*);
+
 
 
 #endif
