@@ -9,7 +9,7 @@
 
 
 
-int pushTask(TaskQueue* q, Task t){
+int pushTask(TaskQueue* q, BzoTask t){
   int next = (q->bottom + 1) % 16;
   if(next != q->top){
     q->tasks[q->bottom] = t;
@@ -28,7 +28,7 @@ int pushTask(TaskQueue* q, Task t){
 
 
 
-int popTask(TaskQueue* q, Task* t){
+int popTask(TaskQueue* q, BzoTask* t){
   if(q->top != q->bottom){
     *t = q->tasks[q->top];
     q->top = (q->top + 1) % 16;
