@@ -13,44 +13,8 @@
 
 
 
-typedef struct{
-  BzoTaskUnit* taskUnits;
-
-  int threadNum;
-  int sysStatus;
-
-  void* returnState;
-}BzoRuntime;
-
-
-
-
-
-
-
-
-
-
-//Error Reporting
-typedef enum{
-  BZO_SUCCESS = 0,                  //Everything went smoothly!
-  BZO_ERR_RUNTIME_BUSY = 1,         //Runtime needs to be flushed
-  BZO_ERR_RUNTIME_UNITIALIZED = 2,  //Runtime needs to be initialized
-  BZO_ERR_INV_PTR = 3               //A Pointer Parameter is Invalid
-  BZO_ERR_INV_THD = 4;              //Invalid Thread Number
-}BzoStatus;
-
-
-
-
-
-
-
-
-
-
 //Initialize Bzo Runtime Environment
-BzoStatus bzoInit(int, BzoRuntime*);
+BzoStatus bzoInit(BzoRuntime*, int);
 
 //Run a BzoTask in an initialized environment.
 BzoStatus bzoRunTask(BzoRuntime*, BzoTask);
