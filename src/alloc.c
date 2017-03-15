@@ -22,6 +22,7 @@ BzoAllocErr configMemPool(Bzo_MemPool* a, int stride, int size){
 
   a->scanCtr = 0;
   a->lastScanPt = a->block;
+  a->lastDel = NULL;
   a->deletePt = NULL;
   a->delFlag = 0;
 
@@ -54,6 +55,7 @@ void cleanMemPool(Bzo_MemPool* a){
   a->scanCtr = 0;
   uint64_t* maximum = a->block + a->size;
   int ct = 0;
+
   for(uint64_t* it = a->lastScanPt; it < maximum; it += a->stride){
 
     if(ct == 256){
@@ -62,10 +64,18 @@ void cleanMemPool(Bzo_MemPool* a){
       return;
     }
 
+    // Clean up time?
     if((*it != 0) && (*it != (uint64_t)a)){
-      // Clean up time!
-
+      //Is there a valid delete point?
+      if(a->deletePt == NULL)
+        a->deletePt = it;
+      else if(*(a->lastDel) != (uint64_t)a){
+        *(a->lastDel) = (uint64_t)it;
+        a->lastDel = it;
+      }
+      a->fill--;
     }
+
     ct++;
   }
 

@@ -39,10 +39,14 @@ typedef struct{
   // have occured since the last time the allocator checked. LastScanPt stores
   // a pointer to the last scanned object, and scanCtr is a counter to keep
   // track of when to perform the routine scans.
+  // DeletePt is also used for finding allocation points after the pool stack
+  // has been filled.
+  // LastDel is used during scans to determine where to link deletion lists.
   uint64_t* lastScanPt;
+  uint64_t* lastDel;
   uint64_t* deletePt;   // PWRITE
   int16_t   scanCtr;
-  uint8_t delFlag;      // PWRITE
+  uint8_t   delFlag;    // PWRITE
 }Bzo_MemPool;
 
 typedef enum{
