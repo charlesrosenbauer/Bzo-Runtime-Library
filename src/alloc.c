@@ -92,12 +92,35 @@ void cleanMemPool(Bzo_MemPool* a){
 
 
 
-void* bzo_palloc(Bzo_MemPool* a, BzoAllocErr* err){
-  if(a->fill < a->capacity){
-    //There is some space available somewhere!
-    if(a->stackpt < a->capacity){
-      //Let's add to the stack!
+void* bzo_palloc(Bzo_MemPool* a, int runFast){
+
+  //Every so often, run cleanup.
+  if(a->delFlag){
+    a->scanCtr++;
+    if(a->scanCtr >= 512){
+      a->scanCtr = 0;
+      cleanMemPool(a);
     }
   }
 
+  if(a->fill < a->capacity){
+    //There is some space available somewhere!
+
+    if((a->deletePt != NULL) && (*(a->deletePt) != 0) && (*(a->deletePt) != (uint64_t)a)){
+      //deletePt is valid!
+      void* ptr = (void*)(a->deletePt);
+      a->deletePt = (uint64_t*)*(a->deletePt);
+      return ptr;
+    }else if(a->stackpt < a->size){
+      //Let's add to the stack!
+      void* ptr = (void*)(a->block + a->stackpt);
+      a->stackpt += a->stride;
+      return ptr;
+    }else if(!runFast){
+      //Run linear scan to find the elusive empty space
+
+
+    }
+  }
+  return NULL;
 }

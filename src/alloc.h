@@ -66,7 +66,7 @@ typedef enum{
 
 BzoAllocErr configMemPool(Bzo_MemPool*, int, int);
 BzoAllocErr configMemPoolPages(Bzo_MemPool*, int, int);
-void*    bzo_palloc(Bzo_MemPool*, BzoAllocErr*);
+void*    bzo_palloc(Bzo_MemPool*, int);
 
 
 
