@@ -64,9 +64,23 @@ typedef enum{
 
 
 
+typedef struct{
+
+}BzoAllocator;
+
+
+
+
+
+
+
+
+
+
 BzoAllocErr configMemPool(Bzo_MemPool*, int, int);
 BzoAllocErr configMemPoolPages(Bzo_MemPool*, int, int);
-void*    bzo_palloc(Bzo_MemPool*, int);
+void        wipeMemPool(Bzo_MemPool*);
+void*       bzo_palloc(Bzo_MemPool*);
 
 
 

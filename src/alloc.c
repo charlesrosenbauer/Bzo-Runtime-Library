@@ -51,6 +51,30 @@ BzoAllocErr configMemPoolPages(Bzo_MemPool* a, int stride, int pages){
 
 
 
+void wipeMemPool(Bzo_MemPool* a){
+  a->stride     = 0;
+  a->size       = 0;
+  a->capacity   = 0;
+  a->fill       = 0;
+  a->stackpt    = 0;
+  a->scanCtr    = 0;
+  a->lastScanPt = NULL;
+  a->lastDel    = NULL;
+  a->deletePt   = NULL;
+  a->delFlag    = 0;
+  free(a->block);
+  a->block = NULL;
+}
+
+
+
+
+
+
+
+
+
+
 void cleanMemPool(Bzo_MemPool* a){
   a->scanCtr = 0;
   uint64_t* maximum = a->block + a->size;
@@ -92,7 +116,7 @@ void cleanMemPool(Bzo_MemPool* a){
 
 
 
-void* bzo_palloc(Bzo_MemPool* a, int runFast){
+void* bzo_palloc(Bzo_MemPool* a){
 
   //Every so often, run cleanup.
   if(a->delFlag){
@@ -108,18 +132,16 @@ void* bzo_palloc(Bzo_MemPool* a, int runFast){
 
     if((a->deletePt != NULL) && (*(a->deletePt) != 0) && (*(a->deletePt) != (uint64_t)a)){
       //deletePt is valid!
-      void* ptr = (void*)(a->deletePt);
+      uint64_t* ptr = (a->deletePt);
       a->deletePt = (uint64_t*)*(a->deletePt);
-      return ptr;
+      (*ptr) = (uint64_t)a; // tag as allocated
+      return ptr + 2;
     }else if(a->stackpt < a->size){
       //Let's add to the stack!
-      void* ptr = (void*)(a->block + a->stackpt);
+      uint64_t* ptr = (a->block + a->stackpt);
       a->stackpt += a->stride;
-      return ptr;
-    }else if(!runFast){
-      //Run linear scan to find the elusive empty space
-
-
+      (*ptr) = (uint64_t)a; // tag as allocated
+      return ptr + 2;
     }
   }
   return NULL;
