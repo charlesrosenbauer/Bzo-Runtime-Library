@@ -47,7 +47,7 @@ typedef struct{
   uint64_t* deletePt;   // PWRITE
   int16_t   scanCtr;
   uint8_t   delFlag;    // PWRITE
-}Bzo_MemPool;
+}BzoMemPool;
 
 typedef enum{
   BZ_ALC_PASS = 0,    //Allocation Success
@@ -65,6 +65,24 @@ typedef enum{
 
 
 typedef struct{
+  Bzo_MemPool* poolStack [64];
+  int64_t      capacity  [64];
+
+  int top;
+  int size;
+}BzoPoolStack;
+
+
+
+
+
+
+
+
+
+
+typedef struct{
+  Bzo_MemPool* poolStack [32];
 
 }BzoAllocator;
 
@@ -77,10 +95,13 @@ typedef struct{
 
 
 
-BzoAllocErr configMemPool(Bzo_MemPool*, int, int);
-BzoAllocErr configMemPoolPages(Bzo_MemPool*, int, int);
-void        wipeMemPool(Bzo_MemPool*);
-void*       bzo_palloc(Bzo_MemPool*);
+BzoAllocErr configMemPool(BzoMemPool*, int, int);
+BzoAllocErr configMemPoolPages(BzoMemPool*, int, int);
+void        bzo_wipeMemPool(BzoMemPool*);
+void*       bzo_palloc(BzoMemPool*);
+void        bzo_stackCleanup(BzoPoolStack);
+void*       bzo_pushPool(BzoPoolStack*);
+void*       bzo_alloc(BzoAllocator*);
 
 
 

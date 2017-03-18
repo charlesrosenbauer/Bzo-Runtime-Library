@@ -10,7 +10,7 @@
 
 
 
-BzoAllocErr configMemPool(Bzo_MemPool* a, int stride, int size){
+BzoAllocErr configMemPool(BzoMemPool* a, int stride, int size){
   a->block = malloc(size);
   if(a->block == NULL) return BZ_ALC_INSF;
   a->stride = stride;
@@ -38,7 +38,7 @@ BzoAllocErr configMemPool(Bzo_MemPool* a, int stride, int size){
 
 
 
-BzoAllocErr configMemPoolPages(Bzo_MemPool* a, int stride, int pages){
+BzoAllocErr configMemPoolPages(BzoMemPool* a, int stride, int pages){
   return configMemPool(a, stride, 2097152 * pages);    //2MB blocks
 }
 
@@ -51,7 +51,7 @@ BzoAllocErr configMemPoolPages(Bzo_MemPool* a, int stride, int pages){
 
 
 
-void wipeMemPool(Bzo_MemPool* a){
+void wipeMemPool(BzoMemPool* a){
   a->stride     = 0;
   a->size       = 0;
   a->capacity   = 0;
@@ -75,7 +75,7 @@ void wipeMemPool(Bzo_MemPool* a){
 
 
 
-void cleanMemPool(Bzo_MemPool* a){
+void cleanMemPool(BzoMemPool* a){
   a->scanCtr = 0;
   uint64_t* maximum = a->block + a->size;
   int ct = 0;
@@ -116,7 +116,7 @@ void cleanMemPool(Bzo_MemPool* a){
 
 
 
-void* bzo_palloc(Bzo_MemPool* a){
+void* bzo_palloc(BzoMemPool* a){
 
   //Every so often, run cleanup.
   if(a->delFlag){
@@ -145,4 +145,17 @@ void* bzo_palloc(Bzo_MemPool* a){
     }
   }
   return NULL;
+}
+
+
+
+
+
+
+
+
+
+
+void* bzo_pushPool(BzoPoolStack* p){
+
 }
