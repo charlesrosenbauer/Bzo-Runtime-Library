@@ -1,5 +1,6 @@
 #ifndef _BZO_TYPES_HEADER_
 #define _BZO_TYPES_HEADER_
+#include "stdint.h"
 
 
 
@@ -10,59 +11,26 @@
 
 
 
-//Builtin Support for Higher-Order Functions
-//This reduces complexity of writing parallel code.
 typedef enum{
-  BzHO_MAP,
-  BzHO_REDUCE,
-  BzHO_ESCAN,
-  BzHO_ISCAN,
-  BzHO_FILTER
-}BzoHOFn;
-
-
-
-
-
-
-
-
-
-
-//Stores constraints for Task Generation
+  Bzo_TNRM,   // Normal Mode
+  Bzo_TCSR,   // Normal Mode with Thread Constraint
+  Bzo_TMAP,   // Standard Map Mode
+  Bzo_TMPW,   // Map Mode with Exit Write
+  Bzo_TMPI,   // Map Index Mode
+  Bzo_TMIW,   // Map Index Mode with Exit Write
+  Bzo_TMPC,   // Map Mode with Child
+  Bzo_TMCI    // Map Index Mode with Child
+}TaskMode;
 typedef struct{
-  uint64_t pars[4];
-  uint32_t coreReq;
-}BzoConstraint;
-
-
-
-
-
-
-
-
-
-
-typedef struct{
-  void(*fnptr)(void*);  //Function Pointer
-  void* param;          //Main Parameter(s)
-
-  /*
-    Higher-Order Function Specifications
-
-    hoType    : Type of Higher-Order Function
-    itemNum   : Number of items to run the task across. If == 1, the task is run as a normal function.
-    parStride : If the task is run as a Higher-Order function, param is treated as a pointer to an
-                  array of inputs. parStride is the size of each element in the array.
-  */
-  BzoHOFn hoType;
-  int itemNum;
-  int parStride;
-
-  //NUMA-centered
-  uint32_t threadReq;   //NUMA specific
-  uint64_t pars[4];     //Still supported for SMP, but not that useful for SMP.
+  void*    fp;   // Generic Function Pointer
+  uint64_t dp;   // Generic Data
+  void*    sz;   // Map Data Length
+  uint64_t st;   // Map Array Stride, or Specific Thread
+  uint64_t init; // Initial Index
+  uint64_t ext;  // Either Exit write, or Child Parameter
+  void*    chld; // Generic Child Function Pointer
+  uint32_t cst;  // Cost per iteration
+  TaskMode ty;   // Task Mode
 }BzoTask;
 
 
@@ -74,11 +42,11 @@ typedef struct{
 
 
 
-//Task queues can hold N-1 items, where N is the number of elements in the tasks array.
-typedef struct{
-  int top, bottom;
-  BzoTask tasks [16];
-  void* sibling;
+typedef struct{     // Small Lock-Free Queue for Tasks.
+  Task data[64];    // 64 Entries | 63 usable | 4kB block
+  int top, bot;
+  void* partner;    // Partner for two-way communication
+  void* parent;     // Parent Task Unit
 }TaskQueue;
 
 
@@ -90,16 +58,28 @@ typedef struct{
 
 
 
+typedef struct{       // Large Task Queue. Not thread Safe
+  Task data[1024];    // 1024 entries | 1024 usable | 64kB block
+  int base, size;
+}PrivateTaskQueue;
+
+
+
+
+
+
+
+
+
+
 typedef struct{
-  TaskQueue* tQ;    //Topological Queues
-  TaskQueue  iQ;    //Internal Queue
-  TaskQueue* hQ;    //Higher-Order Queues
-
-  int tqSize;       //Number of Topological Queues
-  int hqSize;       //Number of Higher-Order Queues
-
-
-  void* runtimePtr; //Pointer to the runtime.
+  PrivateTaskQueue pq;      // Private Queue
+  TaskQueue        tq[4];   // Directional
+  TaskQueue*       mp;      // Map Queues
+  int              nmq;     // Number of Map Queues
+  int              demand;  // Demand for Tasks. Normally 0.
+  void*            alc;     // Allocator <not implemented yet>
+  void*            env;     // Bzo Environment
 }BzoTaskUnit;
 
 
@@ -112,37 +92,10 @@ typedef struct{
 
 
 typedef struct{
-  BzoTaskUnit* taskUnits;
-
-  int threadNum;
-  int sysStatus;
-
-  void* returnState;
-}BzoRuntime;
-
-
-
-
-
-
-
-
-
-
-//Error Reporting
-typedef enum{
-  BZO_SUCCESS = 0,                  //Everything went smoothly!
-  BZO_ERR_RUNTIME_BUSY = 1,         //Runtime needs to be flushed
-  BZO_ERR_RUNTIME_UNITIALIZED = 2,  //Runtime needs to be initialized
-  BZO_ERR_INV_PTR = 3,              //A Pointer Parameter is Invalid
-  BZO_ERR_INV_THD = 4               //Invalid Thread Number
-}BzoStatus;
-
-
-
-
-
-
+  TaskUnit** unitgrid;      // Pointer to pointers for grid
+  int        h, w, n, sz;   // Height, width, number of active threads, size of grid
+  void*      state;         // State for returning data upon failure or halt
+}BzoEnvironment;
 
 
 
