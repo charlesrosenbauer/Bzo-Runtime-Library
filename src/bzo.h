@@ -14,39 +14,28 @@
 
 
 //Initialize Bzo Runtime Environment
-BzoStatus bzoInit(BzoRuntime*, int);
+extern BzoStatus bzoInit(BzoRuntime*, int);
 
 //Run a BzoTask in an initialized environment.
-BzoStatus bzoRunTask(BzoRuntime*, BzoTask);
+extern BzoStatus bzoRunTask(BzoRuntime*, BzoTask);
 
 //Flush the contents of an initialized environment.
-BzoStatus bzoFlush(BzoRuntime*);
+extern BzoStatus bzoFlush(BzoRuntime*);
 
 //Make BzoTask
-BzoTask bzoMakeTask(void*, void(void*), BzoConstraint);
-
-//Make Higher Order BzoTask
-BzoTask bzoMakeHigherOrderTask(void*, void(void*), BzoConstraint, int, BzoHOFn);
-
-//Make BzoConstraint to add 4 extra parameters
-void bzoSetConstraintPars(BzoConstraint*, uint64_t, uint64_t, uint64_t, uint64_t);
-
-//Make BzoConstraint with thread ID requirement (for NUMA).
-//This can be ignored in SMP architectures.
-void bzoSetConstraintThreadID(BzoConstraint*, uint32_t);
-
+extern BzoTask bzoMakeTask(void(void*), void*, void(void*), void*);
 
 //Internal Function : Halt Bzo System
-void bzoHalt(BzoRuntime*, int, void*);
+extern void bzoHalt(BzoRuntime*, int, void*);
 
 //Internal Function : Allocate Memory
-void* bzoAlloc(BzoTaskUnit*, int);
+extern void* bzoAlloc(BzoTaskUnit*, int);
 
 //Internal Function : Free Memory
-void bzoFree(void*);
+extern void bzoFree(void*);
 
 //Internal Function : Spawn Thread
-void bzoSpawn(BzoTaskUnit*, BzoTask);
+extern void bzoSpawn(BzoTaskUnit*, BzoTask);
 
 
 
