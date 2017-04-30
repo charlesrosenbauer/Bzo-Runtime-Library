@@ -106,4 +106,20 @@ typedef struct{
 
 
 
+typedef enum{
+  BZO_SUCESS = 0,
+  BZO_ERR_RUNTIME_UNITIALIZED = 1,
+  BZO_ERR_RUNTIME_BUSY = 2,
+  BZO_FAIL = 3
+}BzoStatus;
+
+
+
+
+
+
+
+
+
+
 #endif
