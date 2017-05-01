@@ -10,27 +10,52 @@
 
 
 
-BzoStatus bzoInit(BzoRuntime* brt, int tnum){
+void computeSize(int target, int* h, int* w){
 
-  if(brt  == NULL) return BZO_ERR_INV_PTR;
-  if(tnum <  1   ) return BZO_ERR_INV_THD;
-
-  //If there are fewer than 16 threads, a cluster topology is used.
-  //Else, a grid topology is used.
-  //When adding NUMA support, alternate topologies may be used
-  //A grid topology may change the number of threads
-  if(tnum <= 16){
-    brt->taskUnits = malloc(sizeof(BzoTaskUnit) * tnum);
-    for(int it = 0; it < tnum; it++){
-      //brt->taskUnits[it]
+  int num = 1024;
+  int max = 1024;
+  int min = 0;
+  int cont = 1;
+  while(cont){
+    if((num * num) > target){
+      max = num;
+      num = (num + min) / 2;
+    }else if((num * num) == target){
+      cont = 0;
+    }else if(num == (min+1)){
+      cont = 0;
+    }else{
+      num = (max + num) / 2;
     }
-  }else{
-
   }
 
-  brt->threadNum = tnum;
-  brt->sysStatus = 0;
-  brt->returnState = NULL;
+  if((num * (num - 1)) >= target){
+    *h = num;
+    *w = num - 1;
+  }else{
+    *h = num;
+    *w = num;
+  }
+}
+
+
+
+
+
+
+
+
+
+
+BzoStatus bzoInit(BzoEnvironment* env, int tnum){
+
+  if(env  == NULL) return BZO_ERR_INV_PTR;
+  if(tnum <  1   ) return BZO_ERR_INV_THD;
+
+  int h, w;
+  computeSize(tnum, &h, &w);
+
+  env->unitgrid = malloc(sizeof(BzoTaskUnit) *  h * w);
 
   return BZO_SUCCESS;
 }
