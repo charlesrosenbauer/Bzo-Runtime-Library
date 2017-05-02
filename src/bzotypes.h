@@ -43,7 +43,7 @@ typedef struct{
 
 
 typedef struct{     // Small Lock-Free Queue for Tasks.
-  Task data[64];    // 64 Entries | 63 usable | 4kB block
+  BzoTask data[64];    // 64 Entries | 63 usable | 4kB block
   int top, bot;
   void* partner;    // Partner for two-way communication
   void* parent;     // Parent Task Unit
@@ -59,7 +59,7 @@ typedef struct{     // Small Lock-Free Queue for Tasks.
 
 
 typedef struct{       // Large Task Queue. Not thread Safe
-  Task data[1024];    // 1024 entries | 1024 usable | 64kB block
+  BzoTask data[1024];    // 1024 entries | 1024 usable | 64kB block
   int base, size;
 }PrivateTaskQueue;
 
@@ -92,7 +92,7 @@ typedef struct{
 
 
 typedef struct{
-  TaskUnit** unitgrid;      // Pointer to pointers for grid
+  BzoTaskUnit** unitgrid;      // Pointer to pointers for grid
   int        h, w, n, sz;   // Height, width, number of active threads, size of grid
   void*      state;         // State for returning data upon failure or halt
 }BzoEnvironment;
@@ -107,7 +107,7 @@ typedef struct{
 
 
 typedef enum{
-  BZO_SUCESS = 0,
+  BZO_SUCCESS = 0,
   BZO_ERR_RUNTIME_UNITIALIZED = 1,
   BZO_ERR_RUNTIME_BUSY = 2,
   BZO_FAIL = 3,

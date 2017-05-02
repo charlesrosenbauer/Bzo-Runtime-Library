@@ -73,19 +73,19 @@ BzoStatus bzoInit(BzoEnvironment* env, int tnum){
     int cont = (stride < tnum);
     if(cont){   // At top level, might be fewer than 4 nodes below
       for(int it = 0; it < tnum; it += stride)
-        env->unitgrid[it].nmq+=toplevelnum;
+        env->unitgrid[it]->nmq+=toplevelnum;
     }else{
       toplevelnum = 0;
       int maxIt = 0;
       for(int it = 0; it < (tnum - stride); it += stride){
-        env->unitgrid[it].nmq+=4;
+        env->unitgrid[it]->nmq+=4;
         maxIt = it;
       }
-      env->unitgrid[maxIt].nmq += (tnum % stride);
+      env->unitgrid[maxIt]->nmq += (tnum % stride);
     }
   }while(stride < tnum);
   for(int it = 0; it < tnum; it++)
-    env->unitgrid[it].mp = malloc(sizeof(TaskQueue) * (++env->unitgrid[it].nmq));
+    env->unitgrid[it]->mp = malloc(sizeof(TaskQueue) * (++env->unitgrid[it]->nmq));
 
   return BZO_SUCCESS;
 }
