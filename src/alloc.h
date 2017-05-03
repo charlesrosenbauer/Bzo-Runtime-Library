@@ -65,7 +65,7 @@ typedef enum{
 
 
 typedef struct{
-  Bzo_MemPool* poolStack [64];
+  //Bzo_MemPool* poolStack [64];
   int64_t      capacity  [64];
 
   int top;
@@ -82,7 +82,7 @@ typedef struct{
 
 
 typedef struct{
-  Bzo_MemPool* poolStack [32];
+  //Bzo_MemPool* poolStack [32];
 
 }BzoAllocator;
 

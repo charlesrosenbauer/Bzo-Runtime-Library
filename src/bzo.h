@@ -38,7 +38,7 @@ extern void bzoFree(void*);
 extern void bzoSpawn(BzoTaskUnit*, BzoTask);
 
 
-
+void computeSize(int, int*, int*);
 
 
 #endif

@@ -12,3 +12,6 @@ test:
 	ranlib bin/bzo.a
 	rm bin/bzo.o bin/tasks.o
 	gcc -L bin/bzo.a tests/test.c -o bin/test
+
+testNoLib:
+	gcc -pthread src/*.c tests/test.c -o bin/bzo

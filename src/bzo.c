@@ -12,29 +12,30 @@
 
 void computeSize(int target, int* h, int* w){
 
-  int num = 1024;
-  int max = 1024;
-  int min = 0;
-  int cont = 1;
-  while(cont){
-    if((num * num) > target){
-      max = num;
-      num = (num + min) / 2;
-    }else if((num * num) == target){
-      cont = 0;
-    }else if(num == (min+1)){
-      cont = 0;
+  // Doesn't need to be fast. Running only once, terminates in sqrt(target) iterations.
+  int num  = 1;
+  while(1){
+    int sqr = (num * num);
+    if(sqr == target){
+      *h = num;
+      *w = num;
+      return;
+    }else if(sqr - num == target){
+      *h = num;
+      *w = num - 1;
+      return;
+    }else if(sqr > target){
+      if(sqr - num > target){
+        *h = num;
+        *w = num - 1;
+        return;
+      }
+      *h = num;
+      *w = num;
+      return;
     }else{
-      num = (max + num) / 2;
+      num++;
     }
-  }
-
-  if((num * (num - 1)) >= target){
-    *h = num;
-    *w = num - 1;
-  }else{
-    *h = num;
-    *w = num;
   }
 }
 
@@ -56,6 +57,10 @@ BzoStatus bzoInit(BzoEnvironment* env, int tnum){
   int h, w;
   computeSize(tnum, &h, &w);
   env->unitgrid = malloc(sizeof(BzoTaskUnit*) *  h * w);
+  env->h  = h;
+  env->w  = w;
+  env->sz = (h*w);
+  env->n  = tnum;
 
   // Initialize TaskUnit Grid
   for(int it = 0; it < (h * w); it++){
