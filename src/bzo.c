@@ -71,6 +71,8 @@ BzoStatus bzoInit(BzoEnvironment* env, int tnum){
   }
 
   // Allocate Map Queues
+  // Not currently working properly, also not necessarily needed yet
+  /*
   int stride = 1;
   int toplevelnum;
   do{
@@ -91,6 +93,8 @@ BzoStatus bzoInit(BzoEnvironment* env, int tnum){
   }while(stride < tnum);
   for(int it = 0; it < tnum; it++)
     env->unitgrid[it]->mp = malloc(sizeof(TaskQueue) * (++env->unitgrid[it]->nmq));
+  */
+
 
   return BZO_SUCCESS;
 }
