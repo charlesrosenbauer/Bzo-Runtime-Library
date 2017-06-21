@@ -13,7 +13,7 @@
 typedef struct{
   void*(*fptr)(void*);
   void*        data;
-}Task;
+}BzoTask;
 
 
 
@@ -25,10 +25,10 @@ typedef struct{
 
 
 typedef struct{
-  Task data[32];
+  BzoTask data[32];
   int8_t top, end;
   void* sibling;
-}TaskQueue;
+}BzoTaskQueue;
 
 
 
@@ -40,11 +40,11 @@ typedef struct{
 
 
 typedef struct{
-  TaskQueue nieghbors[4];
-  Task data[1024];    // Local queue
+  BzoTaskQueue nieghbors[4];
+  BzoTask data[1024];    // Local queue
   int base, size;     // Local queue base and size
   void* environment;
-}TaskUnit;
+}BzoTaskUnit;
 
 
 
@@ -56,8 +56,37 @@ typedef struct{
 
 
 typedef struct{
-  TaskUnit* grid;
+  BzoTaskUnit* grid;
   int h, w, count;
   uint64_t globalState;
   void* globalReturn;
 }BzoEnvironment;
+
+
+
+
+
+
+
+
+
+
+typedef enum{
+  BZ_SUCCESS = 0,
+  BZ_FAIL    = 1
+}BzoStatus;
+
+
+
+
+
+
+
+
+
+
+int pushTask(BzoTaskQueue*, BzoTask);
+int popTask(BzoTaskQueue*, BzoTask*);
+int queueSize(BzoTaskQueue*);
+BzoStatus initEnvironment(BzoEnvironment*, int);
+BzoStatus runBzoTask(BzoEnvironment*, BzoTask, uint64_t*, void**);
