@@ -85,14 +85,16 @@ BzoStatus initEnvironment(BzoEnvironment* env, int tnum){
     //Figure out a height and width for the taskunit grid, set them as h & w in env.
     env->count = tnum;
     int h = 1, w = 1;
-    for(int i = 0; i < tnum; i++){
+    for(int i = 1; i < tnum; i++){
       int ct = h * w;
-      if((ct - tnum) < i) h++;
+      if((ct - tnum) < 0) h++;
       else break;
       ct = h * w;
-      if((ct - tnum) < i) w++;
+      if((ct - tnum) < 0) w++;
       else break;
     }
+    env->h = h;
+    env->w = w;
   }
 
   {
