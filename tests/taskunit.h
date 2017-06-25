@@ -41,9 +41,10 @@ typedef struct{
 
 typedef struct{
   BzoTaskQueue nieghbors[4];
-  BzoTask data[1024];    // Local queue
+  BzoTask data[1024]; // Local queue
   int base, size;     // Local queue base and size
   void* environment;
+  int isActive;       //1 means the unit is active
 }BzoTaskUnit;
 
 

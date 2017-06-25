@@ -60,10 +60,11 @@ int queueSize(BzoTaskQueue* q){
 
 
 
-void initTaskUnit(BzoTaskUnit* t, void* env){
+void initTaskUnit(BzoTaskUnit* t, void* env, int isActive){
   t->environment = env;
   t->base = 0;
   t->size = 0;
+  t->isActive = (isActive == 1)? 1 : 0;
 }
 
 
@@ -101,6 +102,10 @@ BzoStatus initEnvironment(BzoEnvironment* env, int tnum){
     env->globalState = 0;
     env->globalReturn = 0;
     env->grid = (BzoTaskUnit*)malloc(sizeof(BzoTaskUnit) * env->h * env->w);
+    int ct = env->h * env->w;
+    for(int it = 0; it < ct; it++){
+      initTaskUnit(&env->grid[it], &env, (it < tnum)? 1 : 0);
+    }
   }
 
   return BZ_SUCCESS;
