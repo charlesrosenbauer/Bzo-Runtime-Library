@@ -60,11 +60,46 @@ int queueSize(BzoTaskQueue* q){
 
 
 
-void initTaskUnit(BzoTaskUnit* t, void* env, int isActive){
+void initTaskUnit0(BzoTaskUnit* t, void* env, int isActive){
   t->environment = env;
   t->base = 0;
   t->size = 0;
   t->isActive = (isActive == 1)? 1 : 0;
+}
+
+
+
+
+
+
+
+
+
+
+void initTaskUnit1(BzoTaskUnit* t, BzoEnvironment* env, int id){
+
+  int coords [4][2];
+  coords[0][0] = -1; coords[0][1] =  0;
+  coords[1][0] =  0; coords[1][1] =  1;
+  coords[2][0] =  1; coords[2][1] =  0;
+  coords[3][0] =  0; coords[3][1] = -1;
+
+  int x = id % env->w;
+  int y = id / env->h;
+
+  for(int it = 0; it < 4; it++){
+
+    int x0, y0, indexTo;
+    do{
+      x0 = x + coords[it][0];
+      y0 = y + coords[it][1];
+      x0 = (x0 + env->w) % env->w;
+      y0 = (y0 + env->h) % env->h;
+      indexTo = (y0 * env->w) + x0;
+    }while(env->grid[indexTo].isActive != 1);
+
+    // Link queues to corresponding taskunit.
+  }
 }
 
 
@@ -104,7 +139,10 @@ BzoStatus initEnvironment(BzoEnvironment* env, int tnum){
     env->grid = (BzoTaskUnit*)malloc(sizeof(BzoTaskUnit) * env->h * env->w);
     int ct = env->h * env->w;
     for(int it = 0; it < ct; it++){
-      initTaskUnit(&env->grid[it], &env, (it < tnum)? 1 : 0);
+      initTaskUnit0(&env->grid[it], env, (it < tnum)? 1 : 0);
+    }
+    for(int it = 0; it < ct; it++){
+      initTaskUnit1(&env->grid[it], env, it);
     }
   }
 
