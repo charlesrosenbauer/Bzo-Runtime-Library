@@ -86,6 +86,9 @@ typedef enum{
 
 
 
+void spawnTask(BzoTaskUnit*, BzoTask*, int);
+int pushTasks(BzoTaskQueue*, BzoTask*, int);
+int pullTasks(BzoTaskQueue*, BzoTask*, int);
 int pushTask(BzoTaskQueue*, BzoTask);
 int popTask(BzoTaskQueue*, BzoTask*);
 int queueSize(BzoTaskQueue*);

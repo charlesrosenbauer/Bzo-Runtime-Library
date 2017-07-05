@@ -150,8 +150,76 @@ BzoStatus initEnvironment(BzoEnvironment* env, int tnum){
 
     for(int it = 0; it < ct; it++)
       initTaskUnit1(&env->grid[it], env, it);
-    
+
   }
 
   return BZ_SUCCESS;
+}
+
+
+
+
+
+
+
+
+
+
+/*
+  tq    -> Task Queue
+  t     -> Pointer to Task Array
+  tnum  -> Number of Tasks in Array
+  <ret> -> Number of Tasks pushed
+
+  This may later be good to optimize; pulling multiple Tasks at once without multiple calls to pushTask would likely run faster.
+*/
+int pushTasks(BzoTaskQueue* tq, BzoTask* t, int tnum){
+  int ct = 0;
+  for(int it = 0; it < tnum; it++)
+    ct += pushTask(tq, t[it]);
+  return ct;
+}
+
+
+
+
+
+
+
+
+
+
+/*
+  tq    -> Task Queue
+  t     -> Pointer to Task Array
+  limit -> Maximum number of Tasks to pull
+  <ret> -> Number of Tasks pulled
+
+  This may later be good to optimize; pulling multiple Tasks at once without multiple calls to popTask would likely run faster.
+*/
+int pullTasks(BzoTaskQueue* tq, BzoTask* t, int limit){
+  BzoTaskQueue* tx = tq->sibling;
+  int ct = 0;
+  for(int it = 0; it < limit; it++)
+    ct += popTask(tx, &(t[it]));
+  return ct;
+}
+
+
+
+
+
+
+
+
+
+
+/*
+  tu   -> Task unit
+  t    -> Pointer to Task Array
+  tnum -> Number of Tasks
+*/
+void spawnTask(BzoTaskUnit* tu, BzoTask* t, int tnum){
+
+
 }
