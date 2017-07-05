@@ -99,7 +99,14 @@ void initTaskUnit1(BzoTaskUnit* t, BzoEnvironment* env, int id){
     }while(env->grid[indexTo].isActive != 1);
 
     // Link queues to corresponding taskunit.
+    int linkMode = coords[it][0] + coords[it][1];
+    int relIt    = (it + 4) % 4;  // Relative Iteration; what pipeline in the neighbor to connect to
+    void* ptr    = &(t->neighbors[it]);
+    env->grid[indexTo].neighbors[relIt].sibling = ptr;
+    t->neighbors[it].top = 0;
+    t->neighbors[it].end = 0;
   }
+
 }
 
 
@@ -138,12 +145,12 @@ BzoStatus initEnvironment(BzoEnvironment* env, int tnum){
     env->globalReturn = 0;
     env->grid = (BzoTaskUnit*)malloc(sizeof(BzoTaskUnit) * env->h * env->w);
     int ct = env->h * env->w;
-    for(int it = 0; it < ct; it++){
+    for(int it = 0; it < ct; it++)
       initTaskUnit0(&env->grid[it], env, (it < tnum)? 1 : 0);
-    }
-    for(int it = 0; it < ct; it++){
+
+    for(int it = 0; it < ct; it++)
       initTaskUnit1(&env->grid[it], env, it);
-    }
+    
   }
 
   return BZ_SUCCESS;
