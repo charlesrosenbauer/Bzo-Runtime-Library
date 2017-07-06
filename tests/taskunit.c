@@ -64,7 +64,7 @@ void initTaskUnit0(BzoTaskUnit* t, void* env, int isActive){
   t->environment = env;
   t->base = 0;
   t->size = 0;
-  t->isActive = (isActive == 1)? 1 : 0;
+  t->isActive = isActive;
 }
 
 
@@ -85,14 +85,15 @@ void initTaskUnit1(BzoTaskUnit* t, BzoEnvironment* env, int id){
   coords[3][0] =  0; coords[3][1] = -1;
 
   int x = id % env->w;
-  int y = id / env->h;
+  int y = id / env->w;
 
   for(int it = 0; it < 4; it++){
 
     int x0, y0, indexTo;
+    x0 = x; y0 = y;
     do{
-      x0 = x + coords[it][0];
-      y0 = y + coords[it][1];
+      x0 = x0 + coords[it][0];
+      y0 = y0 + coords[it][1];
       x0 = (x0 + env->w) % env->w;
       y0 = (y0 + env->h) % env->h;
       indexTo = (y0 * env->w) + x0;
@@ -145,10 +146,10 @@ BzoStatus initEnvironment(BzoEnvironment* env, int tnum){
     env->globalReturn = 0;
     env->grid = (BzoTaskUnit*)malloc(sizeof(BzoTaskUnit) * env->h * env->w);
     int ct = env->h * env->w;
-    for(int it = 0; it < ct; it++)
-      initTaskUnit0(&env->grid[it], env, (it < tnum)? 1 : 0);
+    for(int it = 0; it < tnum; it++)
+      initTaskUnit0(&env->grid[it], env, (it <= tnum)? 1 : 0);
 
-    for(int it = 0; it < ct; it++)
+    for(int it = 0; it < tnum; it++)
       initTaskUnit1(&env->grid[it], env, it);
 
   }
