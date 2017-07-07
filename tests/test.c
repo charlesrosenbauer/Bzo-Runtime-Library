@@ -38,4 +38,13 @@ int main(){
     }
     printf("\n");
   }
+
+  BzoTask t;
+  t.fptr = NULL;
+  t.data = NULL;
+  BzoTask ts[16];
+  for(int it = 0; it < 16; it++) ts[it] = t;
+
+  printf("%i \n", pushPrivateTasks(&(env.grid[0]), (BzoTask*)&ts, 16));
+  printf("%i \n", env.grid[0].size);
 }

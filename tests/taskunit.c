@@ -64,6 +64,7 @@ void initTaskUnit0(BzoTaskUnit* t, void* env, int isActive){
   t->environment = env;
   t->base = 0;
   t->size = 0;
+  t->pushIndex = 0;
   t->isActive = isActive;
 }
 
@@ -216,11 +217,62 @@ int pullTasks(BzoTaskQueue* tq, BzoTask* t, int limit){
 
 
 /*
+  tu    -> Task unit
+  t     -> Pointer to Task Array
+  tnum  -> Number of Tasks
+  <ret> -> Number of Tasks Remaining. Will have to change this later.
+*/
+int pushPrivateTasks(BzoTaskUnit* tu, BzoTask* t, int tnum){
+  if(tnum + tu->size >= 1024){
+    int ct = 0;
+    for(int it = tu->size; it < 1024; it++){
+      tu->data[(it + tu->base) % 1024] = t[ct];
+      ct++;
+    }
+    tu->size = 1024;
+    return ct;
+  }
+  for(int it = 0; it < tnum; it++)
+    tu->data[(it + tu->base + tu->size) % 1024] = t[it];
+  tu->size += tnum;
+  
+  return 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+/*
   tu   -> Task unit
   t    -> Pointer to Task Array
   tnum -> Number of Tasks
 */
-void spawnTask(BzoTaskUnit* tu, BzoTask* t, int tnum){
+void spawnNearTasks(BzoTaskUnit* tu, BzoTask* t, int tnum){
+
+}
+
+
+
+
+
+
+
+
+
+
+/*
+  tu   -> Task unit
+  t    -> Pointer to Task Array
+  tnum -> Number of Tasks
+*/
+void spawnTasks(BzoTaskUnit* tu, BzoTask* t, int tnum){
 
 
 }
