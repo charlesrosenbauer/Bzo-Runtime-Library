@@ -76,18 +76,17 @@ void fallocAppend(FastAllocator* h){
 
 
 void* fastAlloc(FastAllocator* a, uint8_t size, uint8_t align){
-	if(a->top != a){
+	if(a->top != a)
 		//Allocate to the actual top
-	}
+		return fastAlloc(a->top, size, align);
+
 
 	long base = ((long)a->data) + a->size;
+
 	int alignVal0, alignVal1;
-	if(align < 8)
-		alignVal0 = (1 << align);
-	else
-		alignVal0 = 0x80;
-	
+	alignVal0 = (align < 8)? (1 << align) : 0x80;
 	alignVal1 = alignVal0 - 1;
+
 	long top  = base + size;
 	if((top & alignVal1) != 0){
 		top +=  alignVal0;
@@ -96,8 +95,14 @@ void* fastAlloc(FastAllocator* a, uint8_t size, uint8_t align){
 	
 	if(base + top >= (long)a->limit){
 		// Allocate next block
+		fallocAppend(a);
+		//Allocate to the actual top
+		return fastAlloc(a->top, size, align);
 	}
 	
+	void* ret = (void*)((base + alignVal0) & ~alignVal1);
+	a->size = top - ((long)a->data);
+	return ret;
 }
 
 
