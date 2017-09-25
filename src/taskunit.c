@@ -1,4 +1,5 @@
 #include "taskunit.h"
+#include "threadmanager.hpp"
 #include <stdlib.h>
 
 
@@ -122,9 +123,14 @@ void initTaskUnit1(BzoTaskUnit* t, BzoEnvironment* env, int id){
 
 /*
   env  -> Environment to initialize
-  tnum -> Thread Number to aim for
+  tnum -> Maximum number of threads to run. -1 results in no maximum value.
 */
-BzoStatus initEnvironment(BzoEnvironment* env, int tnum){
+BzoStatus bzoInit(BzoEnvironment* env, int tnum){
+
+  int sysThreads = getThreadNum();
+  if(tnum == -1)
+    tnum = sysThreads;
+  tnum = (tnum < sysThreads)? tnum : sysThreads;
 
   {
     //Figure out a height and width for the taskunit grid, set them as h & w in env.
