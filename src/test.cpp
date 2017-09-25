@@ -11,6 +11,23 @@
 
 
 
+void hello (BzoTaskUnit* tu){
+  int n = 1;
+  for(int i = 0; i < 1073741824; i++)
+    n = (n * 3) + 1;
+
+  printf("Hello World! %i\n", n);
+}
+
+
+
+
+
+
+
+
+
+
 int main(){
   BzoEnvironment env;
   bzoInit(&env, 64);
@@ -36,4 +53,5 @@ int main(){
     }
     printf("\n");
   }
+  startThreads(&env, hello);
 }

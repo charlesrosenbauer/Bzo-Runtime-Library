@@ -10,7 +10,8 @@
 
 
 
-int getThreadNum();
+int  getThreadNum();
+void startThreads(BzoEnvironment*, void(BzoTaskUnit*));
 
 
 
