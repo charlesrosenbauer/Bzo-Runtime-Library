@@ -200,7 +200,7 @@ int pushTasks(BzoTaskQueue* tq, BzoTask* t, int tnum){
   This may later be good to optimize; pulling multiple Tasks at once without multiple calls to popTask would likely run faster.
 */
 int pullTasks(BzoTaskQueue* tq, BzoTask* t, int limit){
-  BzoTaskQueue* tx = tq->sibling;
+  BzoTaskQueue* tx = (BzoTaskQueue*)tq->sibling;
   int ct = 0;
   for(int it = 0; it < limit; it++)
     ct += popTask(tx, &(t[it]));
@@ -235,7 +235,7 @@ int pushPrivateTasks(BzoTaskUnit* tu, BzoTask* t, int tnum){
   for(int it = 0; it < tnum; it++)
     tu->data[(it + tu->base + tu->size) % 1024] = t[it];
   tu->size += tnum;
-  
+
   return 0;
 }
 
