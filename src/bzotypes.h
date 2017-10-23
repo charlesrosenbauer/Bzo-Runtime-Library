@@ -64,6 +64,7 @@ typedef struct{
 typedef struct{
   BzoTaskUnit* grid;
   int h, w, count;
+  int globalEncourage;
   uint64_t globalState;
   void* globalReturn;
 }BzoEnvironment;

@@ -49,7 +49,7 @@ int popTask(BzoTaskQueue* q, BzoTask* t){
 
 
 int queueSize(BzoTaskQueue* q){
-  return ((16 + q->top) - q->end) % 32;
+  return ((32 + q->top) - q->end) % 32;
 }
 
 
@@ -151,6 +151,7 @@ BzoStatus bzoInit(BzoEnvironment* env, int tnum){
   {
     env->globalState = 0;
     env->globalReturn = 0;
+    env->globalEncourage = 0;
     env->grid = (BzoTaskUnit*)malloc(sizeof(BzoTaskUnit) * env->h * env->w);
     int ct = env->h * env->w;
     for(int it = 0; it < tnum; it++)
@@ -254,14 +255,33 @@ int pushPrivateTasks(BzoTaskUnit* tu, BzoTask* t, int tnum){
 
 
 
+int getLocalCapacity(BzoTaskUnit* tu) {
+  int accum = tu->size;
+  for (int i = 0; i < 4; i++){
+    accum += queueSize(&tu->neighbors[i]);
+  }
+  return accum;
+}
 
-/*
-  tu   -> Task unit
-  t    -> Pointer to Task Array
-  tnum -> Number of Tasks
-*/
-void spawnNearTasks(BzoTaskUnit* tu, BzoTask* t, int tnum){
 
+
+
+
+
+
+
+
+
+float getEncourageVal(BzoEnvironment* env) {
+  float accum = 0;
+  float total = 0;
+  for (int i = 0; i < env->count; i++){
+    if(env->grid[i].isActive){
+      accum += getLocalCapacity(&env->grid[i]);
+      total += 1152;    // 1024 (local tasks) + 4*32 (shared tasks)
+    }
+  }
+  return accum / total;
 }
 
 
