@@ -365,4 +365,9 @@ void exitBzo(BzoTaskUnit* tu, uint64_t finishId, void* outputData){
     env->globalState  = finishId;
     env->globalReturn = outputData;
   }
+
+  // 1 is standard error
+  if (finishId == 1)
+    printf("Application Error: %s\n", (char*)outputData);
+
 }
