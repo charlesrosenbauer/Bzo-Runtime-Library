@@ -1,6 +1,7 @@
 #include "taskunit.h"
 #include "threadmanager.hpp"
 #include <stdlib.h>
+#include <stdio.h>
 
 
 
@@ -344,5 +345,24 @@ void coreRuntime(BzoTaskUnit* tu){
     // DO STUFF
 
     counter = (counter + 1) % 16;
+  }
+}
+
+
+
+
+
+
+
+
+
+
+void exitBzo(BzoTaskUnit* tu, uint64_t finishId, void* outputData){
+  BzoEnvironment* env = (BzoEnvironment*)tu->environment;
+
+  // A finishId of 0 is not an error.
+  if (finishId != 0){
+    env->globalState  = finishId;
+    env->globalReturn = outputData;
   }
 }
