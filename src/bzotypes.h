@@ -50,6 +50,7 @@ typedef struct{
   void* environment;
   int isActive;       //1 means the unit is active
   int pushIndex;
+  int id;
 }BzoTaskUnit;
 
 
@@ -64,7 +65,8 @@ typedef struct{
 typedef struct{
   BzoTaskUnit* grid;
   int h, w, count;
-  int globalEncourage;
+  int globalEncourage;    // 1 means to spawn threads opportunistically
+  int globalHeuristic;    // 1 means that cores should pay closer attention to the distribution of threads
   uint64_t globalState;
   void* globalReturn;
 }BzoEnvironment;

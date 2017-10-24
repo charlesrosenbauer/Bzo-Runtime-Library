@@ -89,6 +89,8 @@ void initTaskUnit1(BzoTaskUnit* t, BzoEnvironment* env, int id){
   int x = id % env->w;
   int y = id / env->w;
 
+  t->id = id;
+
   for(int it = 0; it < 4; it++){
 
     int x0, y0, indexTo;
@@ -256,10 +258,10 @@ int pushPrivateTasks(BzoTaskUnit* tu, BzoTask* t, int tnum){
 
 
 int getLocalCapacity(BzoTaskUnit* tu) {
-  int accum = tu->size;
-  for (int i = 0; i < 4; i++){
+  int accum = 0;
+  for (int i = 0; i < 4; i++)
     accum += queueSize(&tu->neighbors[i]);
-  }
+
   return accum;
 }
 
@@ -272,16 +274,33 @@ int getLocalCapacity(BzoTaskUnit* tu) {
 
 
 
-float getEncourageVal(BzoEnvironment* env) {
-  float accum = 0;
-  float total = 0;
+void setEncourageVal(BzoEnvironment* env) {
+  const float IDEALPASSING  = 0.4;
+  const float IDEALCAPACITY = 0.3;
+  const float IDEALSPREAD   = 0.3;
+
+  float lowPass  = 0;
+  float highPass = 0;
+  int count = 0;
+  float passCapacity = 0;
   for (int i = 0; i < env->count; i++){
-    if(env->grid[i].isActive){
-      accum += getLocalCapacity(&env->grid[i]);
-      total += 1152;    // 1024 (local tasks) + 4*32 (shared tasks)
+    if (env->grid[i].isActive) {
+      float capacity = ((float)getLocalCapacity(&env->grid[i])) / 128.0;
+      passCapacity += capacity;
+      count++;
+      if (capacity > IDEALCAPACITY)
+        highPass += capacity;
+      else
+        lowPass  += capacity;
     }
   }
-  return accum / total;
+
+  float diffPass = highPass - lowPass;
+  diffPass = (diffPass > 0)? diffPass : -diffPass;
+
+  env->globalHeuristic = (diffPass > IDEALSPREAD)? 1 : 0;
+  env->globalEncourage = ((passCapacity / count) < IDEALPASSING)? 1 : 0;
+
 }
 
 
@@ -301,4 +320,29 @@ float getEncourageVal(BzoEnvironment* env) {
 void spawnTasks(BzoTaskUnit* tu, BzoTask* t, int tnum){
 
 
+}
+
+
+
+
+
+
+
+
+
+
+void coreRuntime(BzoTaskUnit* tu){
+
+  int counter = 0;
+
+  BzoEnvironment* env = (BzoEnvironment*)tu->environment;
+  while(env->globalState == 0){
+    if((counter == 0) && (tu->id == 0)){
+      setEncourageVal(env);
+    }
+
+    // DO STUFF
+
+    counter = (counter + 1) % 16;
+  }
 }

@@ -20,6 +20,7 @@ int pullTasks(BzoTaskQueue*, BzoTask*, int);
 int pushTask(BzoTaskQueue*, BzoTask);
 int popTask(BzoTaskQueue*, BzoTask*);
 int queueSize(BzoTaskQueue*);
+void coreRuntime(BzoTaskUnit*);
 BzoStatus initEnvironment(BzoEnvironment*, int);
 BzoStatus runBzoTask(BzoEnvironment*, BzoTask, uint64_t*, void**);
 

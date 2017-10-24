@@ -53,5 +53,5 @@ int main(){
     }
     printf("\n");
   }
-  startThreads(&env, hello);
+  startThreads(&env, coreRuntime);
 }
