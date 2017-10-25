@@ -378,10 +378,11 @@ void coreRuntime(BzoTaskUnit* tu){
   while(env->globalState == 0){
     if(tu->id == 0){
       setEncourageVal(env);
-    }else if(cyclesUnemployed > 5){
-      microSleep(50);
+    }
+    if(cyclesUnemployed > 5){
+      microSleep(100);
     }else if(cyclesUnemployed > 3){
-      microSleep(5);
+      microSleep(10);
     }
 
     BzoTask task = {NULL, NULL};
