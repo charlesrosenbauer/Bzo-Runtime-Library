@@ -332,19 +332,91 @@ void spawnTasks(BzoTaskUnit* tu, BzoTask* t, int tnum){
 
 
 
+int privateQueuePop(BzoTaskUnit* tu, BzoTask* task){
+  if(tu->size == 0) return 0;   // FAILURE! Queue is empty!
+
+  *task = tu->data[tu->base];
+  tu->base = (tu->base + 1) % 1024;
+  tu->size--;
+
+  return 1; // Queue has more left!
+}
+
+
+
+
+
+
+
+
+
+
+int privateQueuePush(BzoTaskUnit* tu, BzoTask task){
+  if(tu->size == 1024) return 0;    // FAILURE! Queue is full! This is not good!
+
+  tu->size++;
+  tu->data[(tu->base + tu->size) % 1024] = task;
+
+  return 1; // Queue has more space!
+}
+
+
+
+
+
+
+
+
+
+
 void coreRuntime(BzoTaskUnit* tu){
 
   int counter = 0;
+  int cyclesUnemployed = 0;
 
   BzoEnvironment* env = (BzoEnvironment*)tu->environment;
   while(env->globalState == 0){
-    if((counter == 0) && (tu->id == 0)){
+    if(tu->id == 0){
       setEncourageVal(env);
+    }else if(cyclesUnemployed > 5){
+      microSleep(50);
+    }else if(cyclesUnemployed > 3){
+      microSleep(5);
     }
 
-    // DO STUFF
+    BzoTask task = {NULL, NULL};
 
-    counter = (counter + 1) % 16;
+    /*
+      Should probably tweak this earlier to start in a random (or cycling) queue.
+      Otherwise, the runtime will be biased toward some queues as opposed to others.
+      This will lead to poor spread over the thread mesh.
+    */
+    if(privateQueuePop(tu, &task))
+      goto startTask; // Jump out of the switch statement. Otherwise, continue.
+
+    if(popTask(&tu->neighbors[0], &task))
+      goto startTask; // Jump out of the switch statement. Otherwise, continue.
+
+    if(popTask(&tu->neighbors[1], &task))
+      goto startTask; // Jump out of the switch statement. Otherwise, continue.
+
+    if(popTask(&tu->neighbors[2], &task))
+      goto startTask; // Jump out of the switch statement. Otherwise, continue.
+
+    if(popTask(&tu->neighbors[3], &task))
+      goto startTask; // Jump out of the switch statement. Otherwise, continue.
+
+
+    startTask:
+    if(task.fptr != NULL){
+      cyclesUnemployed = 0;
+      task.fptr((void*)tu, task.data);
+    }else{
+      cyclesUnemployed++;
+    }
+
+
+    counter++;
   }
 }
 

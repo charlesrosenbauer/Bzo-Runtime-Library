@@ -12,6 +12,7 @@
 
 int  getThreadNum();
 void startThreads(BzoEnvironment*, void(BzoTaskUnit*));
+void microSleep(int);
 
 
 

@@ -1,4 +1,5 @@
 #include <thread>
+#include <chrono>
 #include "bzotypes.h"
 
 
@@ -12,6 +13,19 @@
 
 int getThreadNum (){
   return std::thread::hardware_concurrency();
+}
+
+
+
+
+
+
+
+
+
+
+void microSleep(int us){
+  std::this_thread::sleep_for(std::chrono::microseconds(us));
 }
 
 
