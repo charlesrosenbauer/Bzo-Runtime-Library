@@ -26,7 +26,7 @@ extern BzoStatus bzoFlush(BzoEnvironment*);
 extern BzoTask bzoMakeTask(void(void*), void*, void(void*), void*);
 
 //Internal Function : Halt Bzo System
-extern void bzoHalt(BzoEnvironment*, int, void*);
+extern void bzoHalt(BzoTaskUnit*, uint64_t, void*);
 
 //Internal Function : Allocate Memory
 extern void* bzoAlloc(BzoTaskUnit*, int);

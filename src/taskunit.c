@@ -127,6 +127,11 @@ void initTaskUnit1(BzoTaskUnit* t, BzoEnvironment* env, int id){
 /*
   env  -> Environment to initialize
   tnum -> Maximum number of threads to run. -1 results in no maximum value.
+
+  -- Add Later --
+  prop -> Proportion of threads to use. For example, 0.5 means the system will only use 50% of threads available.
+  tmax -> Maximum number of threads to run. -1 results in no maximum value.
+  tmin -> Minimum number of threads to run, provided there are enough hardware threads.
 */
 BzoStatus bzoInit(BzoEnvironment* env, int tnum){
 
@@ -317,10 +322,26 @@ void setEncourageVal(BzoEnvironment* env) {
   tu   -> Task unit
   t    -> Pointer to Task Array
   tnum -> Number of Tasks
+
+  Returns 0 on success, N on failure, where N is the number of tasks that failed to spawn.
 */
-void spawnTasks(BzoTaskUnit* tu, BzoTask* t, int tnum){
+int spawnTasks(BzoTaskUnit* tu, BzoTask* t, int tnum){
+  BzoEnvironment* env = (BzoEnvironment*)tu->environment;
+  if(env->globalEncourage == 0) return tnum;
 
+  // Add slow, smart mode (if globalHeuristic)
 
+  // Fast, dumb mode
+  int tcount = 0;
+  int qIndex = 0;
+  while((tcount < tnum) && (qIndex < 4)){
+    if(pushTask(&tu->neighbors[qIndex], t[tcount]))
+      tcount++;
+    else
+      qIndex++;
+  }
+
+  return (tcount = tnum);
 }
 
 
@@ -379,10 +400,12 @@ void coreRuntime(BzoTaskUnit* tu){
     if(tu->id == 0){
       setEncourageVal(env);
     }
-    if(cyclesUnemployed > 5){
-      microSleep(100);
+    if(cyclesUnemployed > 15){
+      microSleep(250);
+    }else if(cyclesUnemployed > 7){
+      microSleep(50);
     }else if(cyclesUnemployed > 3){
-      microSleep(10);
+      microSleep(5);
     }
 
     BzoTask task = {NULL, NULL};
@@ -430,7 +453,7 @@ void coreRuntime(BzoTaskUnit* tu){
 
 
 
-void exitBzo(BzoTaskUnit* tu, uint64_t finishId, void* outputData){
+void bzoHalt(BzoTaskUnit* tu, uint64_t finishId, void* outputData){
   BzoEnvironment* env = (BzoEnvironment*)tu->environment;
 
   // A finishId of 0 is not an error.

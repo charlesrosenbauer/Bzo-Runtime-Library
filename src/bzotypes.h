@@ -14,10 +14,10 @@
 
 
 //Add more parameters as needed
-typedef struct{
-  void (*fptr)(void*, void*);   // First parameter is the current Task Unit, second is data.
-  void*        data;
-}BzoTask;
+struct BzoTask{
+  BzoTask (*fptr)(void*, void*);   // First parameter is the current Task Unit, second is data.
+  void*   data;
+};
 
 
 
